@@ -1,6 +1,15 @@
 language: android
 jdk: oraclejdk8
 
+env:
+matrix:
+- TEST_TARGET=android
+
+install:
+- true && ([ "$TEST_TARGET" != "android" ] || android-update-sdk --accept-licenses='android-sdk-license-.+' --components=tools)
+- true && ([ "$TEST_TARGET" != "android" ] || android-update-sdk --accept-licenses='android-sdk-license-.+' --components=build-tools-23.0.1)
+
+
 android:
 components:
 - platform-tools
