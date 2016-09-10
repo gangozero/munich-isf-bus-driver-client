@@ -3,7 +3,7 @@ package io.gangozero.isfdriver.activties;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import io.gangozero.isfdriver.R;
-import io.gangozero.isfdriver.fragments.DriverFragment;
+import io.gangozero.isfdriver.fragments.DashboardFragment;
 
 public class DriverActivity extends AppCompatActivity {
 
@@ -14,7 +14,7 @@ public class DriverActivity extends AppCompatActivity {
 		if (savedInstanceState == null) {
 			getSupportFragmentManager()
 					.beginTransaction()
-					.add(R.id.root_container, DriverFragment.create())
+					.add(R.id.root_container, DashboardFragment.create())
 					.commit();
 		}
 	}

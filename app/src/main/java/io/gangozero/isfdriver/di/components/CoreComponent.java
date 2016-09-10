@@ -4,7 +4,7 @@ import dagger.Component;
 import io.gangozero.isfdriver.di.modules.ManagersModule;
 import io.gangozero.isfdriver.di.modules.ProdGoogleDirectionsModule;
 import io.gangozero.isfdriver.di.modules.ProdRestServiceModule;
-import io.gangozero.isfdriver.presenters.DriverDashboardPresenter;
+import io.gangozero.isfdriver.presenters.DashboardPresenter;
 
 import javax.inject.Singleton;
 
@@ -18,5 +18,5 @@ import javax.inject.Singleton;
 		ManagersModule.class
 })
 public interface CoreComponent {
-	void inject(DriverDashboardPresenter routesManager);
+	void inject(DashboardPresenter routesManager);
 }

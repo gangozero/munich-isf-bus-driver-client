@@ -2,10 +2,7 @@ package io.gangozero.isfdriver.di.modules;
 
 import dagger.Module;
 import dagger.Provides;
-import io.gangozero.isfdriver.managers.GoogleMapsDirections;
-import io.gangozero.isfdriver.managers.RestService;
-import io.gangozero.isfdriver.managers.RoutesManager;
-import io.gangozero.isfdriver.managers.RoutesManagerImpl;
+import io.gangozero.isfdriver.managers.*;
 
 import javax.inject.Singleton;
 
@@ -14,6 +11,11 @@ import javax.inject.Singleton;
  */
 @Module
 public class ManagersModule {
+
+	@Provides @Singleton LocationManager provideLocationManager() {
+		return new LocationManagerImpl();
+	}
+
 	@Provides @Singleton RoutesManager provideRoutesManager(
 			RestService restService,
 			GoogleMapsDirections googleMapsDirections
@@ -22,5 +24,9 @@ public class ManagersModule {
 				restService,
 				googleMapsDirections
 		);
+	}
+
+	@Provides @Singleton NotificationsManager provideNotificationsManager() {
+		return new NotificationsManagerImpl();
 	}
 }
