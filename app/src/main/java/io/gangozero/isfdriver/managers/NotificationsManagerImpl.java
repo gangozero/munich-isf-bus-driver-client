@@ -15,7 +15,7 @@ public class NotificationsManagerImpl implements NotificationsManager {
 				while (true) {
 					try {
 						Thread.sleep(1000);
-						subscriber.onNext(new NotificationModel("", "Hello"));
+						subscriber.onNext(new NotificationModel(NotificationModel.TYPE.random(), "Hello"));
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}

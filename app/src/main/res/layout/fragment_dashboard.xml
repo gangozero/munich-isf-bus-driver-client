@@ -10,9 +10,10 @@
 
 	<io.gangozero.isfdriver.views.NotificationView
 			android:id="@+id/notifications_view"
-			android:background="#FF0000"
-			android:layout_width="200dp"
-			android:layout_height="200dp"/>
+			android:layout_alignParentRight="true"
+			android:layout_alignParentTop="true"
+			android:layout_width="230dp"
+			android:layout_height="400dp"/>
 
 	<LinearLayout android:layout_width="wrap_content"
 	              android:layout_height="wrap_content"
@@ -39,5 +40,7 @@
 				android:layout_height="wrap_content"/>
 
 	</LinearLayout>
+
+	<include layout="@layout/overlay_alaram"/>
 
 </RelativeLayout>

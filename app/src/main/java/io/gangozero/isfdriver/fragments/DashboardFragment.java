@@ -2,6 +2,7 @@ package io.gangozero.isfdriver.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,10 @@ public class DashboardFragment extends MapFragment implements DriverDashboardVie
 	@BindView(R.id.btn_start_route) Button btnStartRoute;
 	@BindView(R.id.btn_reset) Button btnReset;
 	@BindView(R.id.notifications_view) NotificationView notificationView;
+	@BindView(R.id.marker_top) View markerTop;
+	@BindView(R.id.marker_bottom) View markerBottom;
+	@BindView(R.id.marker_left) View markerLeft;
+	@BindView(R.id.marker_right) View markerRight;
 
 	private STATE state = STATE.WAITING_FOR_LOC;
 	private Unbinder binder;
@@ -72,7 +77,9 @@ public class DashboardFragment extends MapFragment implements DriverDashboardVie
 	@Nullable @Override public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		View result = super.onCreateView(inflater, container, savedInstanceState);
 		binder = ButterKnife.bind(this, result);
+		notificationView.setLayoutManager(new LinearLayoutManager(getContext()));
 		notificationView.setAdapter(notificationsAdapter);
+
 		return result;
 	}
 
@@ -109,7 +116,26 @@ public class DashboardFragment extends MapFragment implements DriverDashboardVie
 	}
 
 	@Override public void handleNotification(NotificationModel model) {
-		notificationsAdapter.add(model);
+		if (model.type == NotificationModel.TYPE.MESSAGE) {
+			notificationsAdapter.add(model);
+		} else if (model.type == NotificationModel.TYPE.ALARM_LEFT_ON) {
+			markerLeft.setVisibility(View.VISIBLE);
+		} else if (model.type == NotificationModel.TYPE.ALARM_LEFT_OFF) {
+			markerLeft.setVisibility(View.GONE);
+		} else if (model.type == NotificationModel.TYPE.ALARM_RIGHT_ON) {
+			markerRight.setVisibility(View.VISIBLE);
+		} else if (model.type == NotificationModel.TYPE.ALARM_RIGHT_OFF) {
+			markerRight.setVisibility(View.GONE);
+		} else if (model.type == NotificationModel.TYPE.ALARM_TOP_ON) {
+			markerTop.setVisibility(View.VISIBLE);
+		} else if (model.type == NotificationModel.TYPE.ALARM_TOP_OFF) {
+			markerTop.setVisibility(View.GONE);
+		} else if (model.type == NotificationModel.TYPE.ALARM_BOTTOM_ON) {
+			markerBottom.setVisibility(View.VISIBLE);
+		} else if (model.type == NotificationModel.TYPE.ALARM_BOTTOM_OFF) {
+			markerBottom.setVisibility(View.GONE);
+		}
+
 	}
 
 	@Override public void handleErrorNotification(Throwable throwable) {
