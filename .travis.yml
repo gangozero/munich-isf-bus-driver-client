@@ -1,23 +1,13 @@
 language: android
 jdk: oraclejdk8
 
-env:
-matrix:
-- TEST_TARGET=android
-
-install:
-- true && ([ "$TEST_TARGET" != "android" ] || android-update-sdk --accept-licenses='android-sdk-license-.+' --components=tools)
-- true && ([ "$TEST_TARGET" != "android" ] || android-update-sdk --accept-licenses='android-sdk-license-.+' --components=build-tools-23.0.1)
-
-
 android:
-components:
-- platform-tools
-- tools
-
-- build-tools-23.0.1
-
-- extra-google-google_play_services
+  components:
+    - android-23
+    - build-tools-23.0.1
+    - platform-tools
+    - tools
+    - extra-google-google_play_services
 
 script:
-- ./gradlew test
+  - ./gradlew test
