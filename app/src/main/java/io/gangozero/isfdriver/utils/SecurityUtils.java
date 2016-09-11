@@ -19,7 +19,7 @@ import java.security.cert.CertificateFactory;
 public class SecurityUtils {
 
 	public static SSLContext initSSLContext(Context context) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, IOException, CertificateException {
-		char[] passphrase = "temp-pass".toCharArray();
+		char[] passphrase = getPass();
 		KeyStore ksTrust = KeyStore.getInstance("BKS");
 		ksTrust.load(context.getResources().openRawResource(R.raw.out_sert), passphrase);
 		TrustManagerFactory tmf = TrustManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
@@ -33,6 +33,10 @@ public class SecurityUtils {
 		// Create a HTTPS connection
 		//URL url = new URL("https", "10.0.2.2", 8443, "/ssltest");
 		//HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+	}
+
+	private static char[] getPass() {
+		return "temp-pass".toCharArray();
 	}
 
 	public static SSLContext initCertificate(Context c) throws IOException, CertificateException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
@@ -52,7 +56,8 @@ public class SecurityUtils {
 
 		String keyStoreType = KeyStore.getDefaultType();
 		KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-		keyStore.load(null, null);
+		keyStore.load(null, getPass());
+
 		keyStore.setCertificateEntry("ca", ca);
 
 		String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();

@@ -7,6 +7,7 @@ import io.gangozero.isfdriver.managers.RoutesManager;
 import io.gangozero.isfdriver.views.DriverDashboardView;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 import javax.inject.Inject;
 
@@ -23,31 +24,38 @@ public class DashboardPresenter {
 	public @Inject MqttManager mqttManager;
 
 	private DriverDashboardView view;
+	private CompositeSubscription sub;
 
 	public void onViewCreated(DriverDashboardView view) {
 		this.view = view;
-		mqttManager.init();
+		sub = new CompositeSubscription();
 
-		notificationsManager.notificationsObservable()
+		sub.add(mqttManager.getSubscription()
 				.subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(view::handleNotification, view::handleErrorNotification);
+				.subscribe(view::handleNotification, view::handleErrorNotification));
 	}
 
 	public void loadCurrentLocation() {
-		locationManager.currentLocation()
+		sub.add(locationManager.currentLocation()
 				.subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(view::showCurrentLocation, view::errorLoadingLocation);
+				.subscribe(view::showCurrentLocation, view::errorLoadingLocation));
 	}
 
 	public void loadRoute() {
-		routesManager
+		sub.add(routesManager
 				.getRouteWayPoints("006")
 				.flatMap(wayPoints -> routesManager.getFullRoute(wayPoints))
 				.subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(response -> view.showRoute(responseToPoints(response)), view::showErrorRouteLoading);
+				.subscribe(response -> view.showRoute(responseToPoints(response)), view::showErrorRouteLoading));
+	}
+
+	public void onViewDestroyed() {
+		if (sub != null) {
+			sub.unsubscribe();
+		}
 	}
 
 	public void startRoute() {

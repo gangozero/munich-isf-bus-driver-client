@@ -92,6 +92,7 @@ public class DashboardFragment extends MapFragment implements DriverDashboardVie
 
 	@Override public void onDestroyView() {
 		binder.unbind();
+		presenter.onViewDestroyed();
 		super.onDestroyView();
 	}
 
