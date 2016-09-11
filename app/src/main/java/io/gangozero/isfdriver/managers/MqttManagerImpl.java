@@ -8,6 +8,7 @@ import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.fusesource.mqtt.client.*;
 import rx.Observable;
+import rx.subjects.PublishSubject;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -27,7 +28,7 @@ public class MqttManagerImpl implements MqttManager {
 
 	private Context context;
 	private final String protocol = "tcp";
-//	private final String address = "89.188.110.213";
+	//	private final String address = "89.188.110.213";
 	private final String address = "a1ckk9c9g2t33k.iot.eu-west-1.amazonaws.com";
 	private final String amazonAddress = "a1ckk9c9g2t33k.iot.eu-west-1.amazonaws.com";
 	private final String clientId = "isf-driver";
@@ -44,59 +45,59 @@ public class MqttManagerImpl implements MqttManager {
 
 	private Gson gson = new Gson();
 	private MqttClient client;
+	private PublishSubject<NotificationModel> publishSubject = PublishSubject.create();
 
 	public MqttManagerImpl(Context context) {
 		this.context = context;
 	}
 
 	@Override public void init() {
-
+		new Thread(this::createClient).start();
 	}
 
 	@Override public Observable<NotificationModel> getSubscription() {
-		return Observable.create(subscriber -> {
-			try {
+		return publishSubject;
+	}
 
-				client = new MqttClient(conn.protocol + "://" + conn.address + ":" + conn.port, clientId, new MemoryPersistence());
-				client.connect(getOptions());
+	private void createClient() {
+		try {
 
-				client.setCallback(new MqttCallback() {
-					@Override public void connectionLost(Throwable cause) {
-						try {
-							client.reconnect();
-						} catch (MqttException e) {
-							e.printStackTrace();
-						}
-					}
+			client = new MqttClient(conn.protocol + "://" + conn.address + ":" + conn.port, clientId, new MemoryPersistence());
+			client.connect(getOptions());
 
-					@Override public void messageArrived(String topic, MqttMessage message) throws Exception {
-						if (!subscriber.isUnsubscribed()) {
-
-							RawMessage rawMessage = gson.fromJson(new String(message.getPayload()), RawMessage.class);
-
-							subscriber.onNext(new NotificationModel(
-									NotificationModel.TYPE.valueOf(rawMessage.type),
-									rawMessage.message
-							));
-						}
-					}
-
-					@Override public void deliveryComplete(IMqttDeliveryToken token) {
-
-					}
-				});
-				client.publish(initTopic, new MqttMessage(initMessage.getBytes()));
-				client.subscribe(notificationsChannel);
-
-			} catch (MqttException | IOException | CertificateException | KeyStoreException | NoSuchAlgorithmException | KeyManagementException e) {
-				e.printStackTrace();
-			} finally {
-				if (!subscriber.isUnsubscribed()) {
+			client.setCallback(new MqttCallback() {
+				@Override public void connectionLost(Throwable cause) {
 					silentDisconnect();
-					subscriber.onError(new Error("Disconnected"));
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					createClient();
 				}
-			}
-		});
+
+				@Override public void messageArrived(String topic, MqttMessage message) throws Exception {
+
+					RawMessage rawMessage = gson.fromJson(new String(message.getPayload()), RawMessage.class);
+
+					publishSubject.onNext(new NotificationModel(
+							NotificationModel.TYPE.valueOf(rawMessage.type),
+							rawMessage.message
+					));
+				}
+
+				@Override public void deliveryComplete(IMqttDeliveryToken token) {
+
+				}
+			});
+			client.publish(initTopic, new MqttMessage(initMessage.getBytes()));
+			client.subscribe(notificationsChannel);
+
+		} catch (MqttException | IOException | CertificateException | KeyStoreException | NoSuchAlgorithmException | KeyManagementException e) {
+			e.printStackTrace();
+			silentDisconnect();
+			createClient();
+		}
 	}
 
 	private MqttConnectOptions getOptions() throws IOException, CertificateException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
@@ -186,7 +187,7 @@ public class MqttManagerImpl implements MqttManager {
 		String message;
 	}
 
-	private static class ConnectionData{
+	private static class ConnectionData {
 		String address;
 		int port;
 		String protocol;

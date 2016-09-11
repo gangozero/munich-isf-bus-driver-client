@@ -38,6 +38,8 @@ public class ManagersModule {
 	}
 
 	@Provides @Singleton MqttManager provideMqttManager() {
-		return new MqttManagerImpl(app);
+		MqttManagerImpl mqttManager = new MqttManagerImpl(app);
+		mqttManager.init();
+		return mqttManager;
 	}
 }
