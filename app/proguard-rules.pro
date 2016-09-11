@@ -15,3 +15,15 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-keepattributes InnerClasses
+-dontoptimize
+-dontobfuscate
+-dontnote
+-dontshrink
+-dontwarn okio.**
+-dontwarn io.gangozero.**
+-dontwarn retrofit2.**
+-dontwarn com.google.android.gms.**
+
+#-injars bin/classes

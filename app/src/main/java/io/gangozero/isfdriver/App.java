@@ -9,6 +9,6 @@ import io.gangozero.isfdriver.di.DIHelper;
 public class App extends Application {
 	@Override public void onCreate() {
 		super.onCreate();
-		DIHelper.init();
+		DIHelper.init(this);
 	}
 }

@@ -2,6 +2,7 @@ package io.gangozero.isfdriver.di.modules;
 
 import dagger.Module;
 import dagger.Provides;
+import io.gangozero.isfdriver.App;
 import io.gangozero.isfdriver.managers.*;
 
 import javax.inject.Singleton;
@@ -11,6 +12,12 @@ import javax.inject.Singleton;
  */
 @Module
 public class ManagersModule {
+
+	private App app;
+
+	public ManagersModule(App app) {
+		this.app = app;
+	}
 
 	@Provides @Singleton LocationManager provideLocationManager() {
 		return new LocationManagerImpl();
@@ -28,5 +35,9 @@ public class ManagersModule {
 
 	@Provides @Singleton NotificationsManager provideNotificationsManager() {
 		return new NotificationsManagerImpl();
+	}
+
+	@Provides @Singleton MqttManager provideMqttManager() {
+		return new MqttManagerImpl(app);
 	}
 }

@@ -1,6 +1,7 @@
 package io.gangozero.isfdriver.presenters;
 
 import io.gangozero.isfdriver.managers.LocationManager;
+import io.gangozero.isfdriver.managers.MqttManager;
 import io.gangozero.isfdriver.managers.NotificationsManager;
 import io.gangozero.isfdriver.managers.RoutesManager;
 import io.gangozero.isfdriver.views.DriverDashboardView;
@@ -19,11 +20,13 @@ public class DashboardPresenter {
 	public @Inject RoutesManager routesManager;
 	public @Inject LocationManager locationManager;
 	public @Inject NotificationsManager notificationsManager;
+	public @Inject MqttManager mqttManager;
 
 	private DriverDashboardView view;
 
 	public void onViewCreated(DriverDashboardView view) {
 		this.view = view;
+		mqttManager.init();
 
 		notificationsManager.notificationsObservable()
 				.subscribeOn(Schedulers.io())
